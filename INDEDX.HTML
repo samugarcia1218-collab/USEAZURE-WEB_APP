@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Interés Simple</title>
+    <!-- Cargar Tailwind CSS para los estilos modernos y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Cargar fuente Inter de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Ocultar flechas en inputs de tipo number */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+
+    <!-- Contenedor principal de la tarjeta -->
+    <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden border border-slate-100">
+        
+        <!-- Encabezado -->
+        <div class="bg-blue-600 px-6 py-8 text-white text-center">
+            <h1 class="text-2xl font-bold mb-2">Interés Simple</h1>
+            <p class="text-blue-100 text-sm font-medium opacity-90">Calcula fácilmente el rendimiento de tu capital</p>
+            <div class="mt-4 inline-block bg-blue-700/50 rounded-lg px-4 py-2 text-xs font-mono tracking-wide">
+                Fórmula: I = P × (r/100) × t
+            </div>
+        </div>
+
+        <!-- Cuerpo de la calculadora -->
+        <div class="p-6 md:p-8 space-y-6">
+            
+            <!-- Campo: Capital Inicial (P) -->
+            <div>
+                <label for="capital" class="block text-sm font-semibold text-slate-700 mb-1">Capital inicial (P)</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500 font-medium">$</span>
+                    <input type="number" id="capital" placeholder="Ej. 10000" min="0" step="0.01"
+                        class="w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-slate-800 font-medium">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Campo: Tasa de Interés (r) -->
+                <div>
+                    <label for="tasa" class="block text-sm font-semibold text-slate-700 mb-1">Tasa de interés anual (r)</label>
+                    <div class="relative">
+                        <input type="number" id="tasa" placeholder="Ej. 5" min="0" step="0.1"
+                            class="w-full pl-4 pr-8 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-slate-800 font-medium">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 font-medium">%</span>
+                    </div>
+                </div>
+
+                <!-- Campo: Tiempo (t) -->
+                <div>
+                    <label for="tiempo" class="block text-sm font-semibold text-slate-700 mb-1">Tiempo en años (t)</label>
+                    <div class="relative">
+                        <input type="number" id="tiempo" placeholder="Ej. 2" min="0" step="0.5"
+                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-slate-800 font-medium">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divisor -->
+            <hr class="border-slate-100 my-4">
+
+            <!-- Resultados -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Resultados</h3>
+                
+                <div class="bg-blue-50 rounded-xl p-5 border border-blue-100 flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-blue-600 font-semibold mb-1">Interés Generado (I)</p>
+                        <p class="text-2xl font-bold text-blue-900" id="resultado-interes">$0.00</p>
+                    </div>
+                    <div class="bg-blue-100 p-2 rounded-lg text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800 rounded-xl p-5 border border-slate-700 flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-slate-300 font-semibold mb-1">Monto Total (P + I)</p>
+                        <p class="text-3xl font-bold text-white" id="resultado-total">$0.00</p>
+                    </div>
+                    <div class="bg-slate-700 p-2 rounded-lg text-green-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Obtener referencias a los elementos del DOM
+        const capitalInput = document.getElementById('capital');
+        const tasaInput = document.getElementById('tasa');
+        const tiempoInput = document.getElementById('tiempo');
+        
+        const resultadoInteres = document.getElementById('resultado-interes');
+        const resultadoTotal = document.getElementById('resultado-total');
+
+        // Formateador de moneda en pesos/dólares
+        const formatearMoneda = (valor) => {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(valor).replace('US', ''); 
+            // NOTA: Usa 'es-CO' u otra configuración local para el formato de moneda deseado.
+        };
+
+        // Función principal para calcular el interés
+        function calcularInteres() {
+            // Leer valores, convirtiéndolos a números de punto flotante
+            const p = parseFloat(capitalInput.value);
+            const r = parseFloat(tasaInput.value);
+            const t = parseFloat(tiempoInput.value);
+
+            // Validar que los campos tengan números válidos y mayores a 0
+            if (!isNaN(p) && !isNaN(r) && !isNaN(t) && p >= 0 && r >= 0 && t >= 0) {
+                // Calcular el interés simple: I = P * (r / 100) * t
+                const interes = p * (r / 100) * t;
+                // Calcular monto total
+                const montoTotal = p + interes;
+
+                // Actualizar la interfaz
+                resultadoInteres.textContent = formatearMoneda(interes);
+                resultadoTotal.textContent = formatearMoneda(montoTotal);
+            } else {
+                // Si faltan datos o son inválidos, mostrar $0.00
+                resultadoInteres.textContent = '$0.00';
+                resultadoTotal.textContent = '$0.00';
+            }
+        }
+
+        // Escuchar los eventos de entrada (cuando el usuario escribe) para calcular en tiempo real
+        capitalInput.addEventListener('input', calcularInteres);
+        tasaInput.addEventListener('input', calcularInteres);
+        tiempoInput.addEventListener('input', calcularInteres);
+    </script>
+</body>
+</html>
